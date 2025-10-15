@@ -1,0 +1,43 @@
+# Use official Go image as base
+FROM golang:1.25-bookworm
+
+# Install dependencies
+RUN apt-get update && apt-get install -y \
+	curl \
+	git \
+	build-essential \
+	ca-certificates \
+	tree \
+	jq \
+	python3 \
+	python3-pip \
+	python3-venv \
+	&& rm -rf /var/lib/apt/lists/*
+
+# Install Node.js (required for Claude Code)
+RUN curl -fsSL https://deb.nodesource.com/setup_20.x | bash - \
+	&& apt-get install -y nodejs \
+	&& rm -rf /var/lib/apt/lists/*
+
+# Install Rust
+RUN curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh -s -- -y
+
+# Install Claude Code
+RUN npm install -g @anthropic-ai/claude-code
+
+# Set up working directory
+WORKDIR /workspace
+
+# Create a non-root user for security
+RUN useradd -m -s /bin/bash dev && \
+	chown -R dev:dev /workspace
+
+# Switch to non-root user
+USER dev
+
+# Set environment variables
+ENV GOPATH=/home/dev/go
+ENV PATH=$PATH:$GOPATH/bin:/home/dev/.cargo/bin
+
+# Default command
+CMD ["/bin/bash"]
