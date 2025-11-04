@@ -46,6 +46,8 @@ logs:
 
 clean:
 	@docker stop claude-code-dev 2>/dev/null || true
+	@docker stop ai-dev-ui-1 2>/dev/null || true
+	@docker stop ai-dev-db-1 2>/dev/null || true
 	@docker rm claude-code-dev 2>/dev/null || true
 	@docker rmi claudecode:latest 2>/dev/null || true
 	@echo "Cleanup complete"
