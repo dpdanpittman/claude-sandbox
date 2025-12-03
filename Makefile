@@ -22,10 +22,10 @@ build:
 
 run:
 	@bash code.sh
-	docker exec -it claude-code-dev claude
+	docker exec -it claude-code-dev claude --dangerously-skip-permissions
 
 exec:
-	docker exec -it claude-code-dev claude
+	docker exec -it claude-code-dev claude --dangerously-skip-permissions
 
 start:
 	@bash code.sh

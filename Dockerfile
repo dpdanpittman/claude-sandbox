@@ -16,6 +16,7 @@ RUN apt-get update && apt-get install -y \
 	python3-venv \
 	openssl \
 	protobuf-compiler \
+	ripgrep \
 	&& rm -rf /var/lib/apt/lists/*
 
 # Install Node.js (required for Claude Code)
@@ -49,5 +50,6 @@ ENV GOPATH=/home/dev/go
 ENV PATH=/usr/local/go/bin:$GOPATH/bin:/home/dev/.cargo/bin:$PATH
 
 RUN cargo install taplo-cli
+
 # Default command
 CMD ["/bin/bash"]

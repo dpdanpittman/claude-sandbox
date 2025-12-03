@@ -24,6 +24,13 @@ else
   fi
 fi
 
+# Check for Claude authentication
+if [ ! -d "$HOME/.claude" ]; then
+  echo "Error: Claude Code authentication not found."
+  echo "Please run 'claude' on your host machine first to authenticate."
+  exit 1
+fi
+
 # Ensure Docker image exists
 if ! docker image inspect claudecode:latest > /dev/null 2>&1;
 then
@@ -31,15 +38,18 @@ then
   exit 1
 fi
 
-# Check if container is already running
-if docker ps --filter "name=claude-code-dev" --filter "status=running" | grep -q claude-code-dev; then
-  echo "Container 'claude-code-dev' is already running."
-  echo "Use 'make exec' to attach to it, or stop it first with 'make stop'."
-  exit 1
+# Stop and remove any existing container
+if docker ps -a --filter "name=claude-code-dev" | grep -q claude-code-dev; then
+  echo "Removing existing container 'claude-code-dev'..."
+  docker stop claude-code-dev 2>/dev/null || true
+  docker rm claude-code-dev 2>/dev/null || true
 fi
 
 docker run -d \
   -v ${PATH_TO_CODE}:/workspace \
+  -v $HOME/.claude:/home/dev/.claude \
+  --dns 8.8.8.8 \
+  --dns 8.8.4.4 \
   --name claude-code-dev \
   --label project=claude-code \
   claudecode:latest \
@@ -47,3 +57,4 @@ docker run -d \
 
 echo "Container 'claude-code-dev' started in detached mode."
 echo "Use 'make exec' to enter the container."
+
